@@ -5,3 +5,4 @@ diff -u /usr/share/koha/lib/Koha/SearchEngine/Elasticsearch/QueryBuilder.pm.bak 
 diff -u /usr/share/koha/lib/C4/Heading.pm.bak /usr/share/koha/lib/C4/Heading.pm > src/opt/koha-ibpan/patches/C4_
 Heading.patch
 diff -u /usr/share/koha/lib/C4/Heading/MARC21.pm.bak /usr/share/koha/lib/C4/Heading/MARC21.pm > src/opt/koha-ibpan/patches/C4_Heading_MARC21.patch
+diff -u /usr/sbin/koha-plack.bak /usr/sbin/koha-plack > src/opt/koha-ibpan/patches/koha-plack.patch
