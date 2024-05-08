@@ -1,0 +1,6 @@
+Package: koha-ibpan
+Version: 0.1
+Maintainer: IB PAN
+Architecture: all
+Description: Some extras for IB PAN
+Depends: koha-common, koha-elasticsearch, elasticsearch

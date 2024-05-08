@@ -1,0 +1,10 @@
+--- /usr/share/koha/lib/C4/Heading.pm	2024-05-07 12:17:01.836396184 +0200
++++ /usr/share/koha/lib/C4/Heading.pm	2024-05-07 12:17:21.080591796 +0200
+@@ -246,6 +246,7 @@
+         && !$total
+         && $thesaurus
+         && none { $_ eq $thesaurus } (
++            #'DBN', 'kaba',
+             'lcsh',         'lcac', 'mesh', 'nal',
+             'notspecified', 'cash', 'rvm',  'sears',
+             'aat'

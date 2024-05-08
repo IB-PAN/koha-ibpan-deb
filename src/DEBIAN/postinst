@@ -1,0 +1,70 @@
+#!/bin/sh
+
+set -e
+
+# Our script will run once, for one or more triggers at the same time
+# Names of triggered triggers will be space-separated in $2
+trigger_names="$2"
+contains_trigger() { echo "$trigger_names" | grep -F -q -w "$1"; }
+
+patch_koha() {
+	echo '\n==== IB PAN: PATCHING KOHA START ===='
+	NEED_RESTART=""
+	for i in /opt/koha-ibpan/patches/*.patch; do
+		OUTPUT=$(patch -p0 -d/ -N -r- < $i || true)
+		echo $OUTPUT
+		if ! echo "$OUTPUT" | grep -q "Skipping patch."; then
+			NEED_RESTART="1"
+		fi
+	done
+
+	if [ -n "${NEED_RESTART}" ]; then
+		echo 'Restarting koha-common...'
+		systemctl restart koha-common
+	fi
+	echo '==== IB PAN: PATCHING KOHA END ====\n'
+}
+
+update_elasticsearch_plugins() {
+	echo '\n==== IB PAN: UPDATING ELASTICSEARCH PLUGINS START ===='
+	PLUGIN_BIN=/usr/share/elasticsearch/bin/elasticsearch-plugin
+	NEED_RESTART=""
+
+	for plugin in $(${PLUGIN_BIN} list); do
+		"${PLUGIN_BIN}" remove "${plugin}"
+		"${PLUGIN_BIN}" install "${plugin}"
+		NEED_RESTART="1"
+	done
+
+	if [ -n "${NEED_RESTART}" ]; then
+		systemctl restart elasticsearch
+	fi
+	echo '==== IB PAN: UPDATING ELASTICSEARCH PLUGINS END ====\n'
+}
+
+case "$1" in
+	configure)
+		patch_koha
+	;;
+
+	triggered)
+		if contains_trigger "/usr/share/koha"; then
+			patch_koha
+		fi
+		if contains_trigger "/usr/share/elasticsearch"; then
+			update_elasticsearch_plugins
+		fi
+	;;
+
+	abort-upgrade|abort-remove|abort-deconfigure)
+	;;
+
+	*)
+		echo "postinst called with unknown argument \`$1'" >&2
+		exit 1
+	;;
+esac
+
+#DEBHELPER#
+
+exit 0

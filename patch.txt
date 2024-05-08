@@ -1,0 +1,7 @@
+# create patch:
+diff -u old new > hello.patch
+
+diff -u /usr/share/koha/lib/Koha/SearchEngine/Elasticsearch/QueryBuilder.pm.bak /usr/share/koha/lib/Koha/SearchEngine/Elasticsearch/QueryBuilder.pm > src/opt/koha-ibpan/patches/QueryBuilder_ES.patch
+diff -u /usr/share/koha/lib/C4/Heading.pm.bak /usr/share/koha/lib/C4/Heading.pm > src/opt/koha-ibpan/patches/C4_
+Heading.patch
+diff -u /usr/share/koha/lib/C4/Heading/MARC21.pm.bak /usr/share/koha/lib/C4/Heading/MARC21.pm > src/opt/koha-ibpan/patches/C4_Heading_MARC21.patch

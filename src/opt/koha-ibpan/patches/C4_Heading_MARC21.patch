@@ -1,0 +1,15 @@
+--- /usr/share/koha/lib/C4/Heading/MARC21.pm	2024-05-07 12:40:06.554477249 +0200
++++ /usr/share/koha/lib/C4/Heading/MARC21.pm	2024-05-07 12:43:13.304376796 +0200
+@@ -386,6 +386,12 @@
+     elsif ( $ind2 eq '6' ) {
+         $thesaurus = "rvm";
+     }
++    elsif ( $ind2 eq ' ' ) {
++        $thesaurus = "kaba";
++    }
++    elsif ( $ind2 eq '9' ) {
++        $thesaurus = "DBN";
++    }
+     elsif ( $ind2 eq '7' ) {
+         my $sf2 = $field->subfield('2');
+         $thesaurus = $sf2 if defined($sf2);

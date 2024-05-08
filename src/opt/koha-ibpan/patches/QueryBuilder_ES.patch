@@ -1,0 +1,12 @@
+--- /usr/share/koha/lib/Koha/SearchEngine/Elasticsearch/QueryBuilder.pm	2024-05-07 12:10:47.980596012 +0200
++++ /usr/share/koha/lib/Koha/SearchEngine/Elasticsearch/QueryBuilder.pm	2024-05-07 13:50:20.717550184 +0200
+@@ -570,6 +570,9 @@
+ # because they don't have values in controlled field indicators
+ # https://www.loc.gov/marc/authority/ad008.html
+ our $thesaurus_to_value = {
++   kaba => ' ',
++   DBN => '9',
++   dbn => '9',
+    lcsh  => 'a',
+    lcac  => 'b',
+    mesh  => 'c',
