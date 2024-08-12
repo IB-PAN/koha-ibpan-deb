@@ -23,7 +23,7 @@ patch_koha() {
 
 	if [ -n "${NEED_RESTART}" ]; then
 		echo 'Restarting koha-common...'
-		systemctl restart koha-common
+		systemctl restart koha-common && echo 'Restarted koha-common'
 	fi
 
 	echo '==== IB PAN: PATCHING KOHA END ====\n'
@@ -41,7 +41,8 @@ update_elasticsearch_plugins() {
 	done
 
 	if [ -n "${NEED_RESTART}" ]; then
-		systemctl restart elasticsearch
+		echo 'Restarting elasticsearch...'
+		systemctl restart elasticsearch && echo 'Restarted elasticsearch'
 	fi
 	echo '==== IB PAN: UPDATING ELASTICSEARCH PLUGINS END ====\n'
 }
