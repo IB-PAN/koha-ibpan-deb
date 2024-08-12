@@ -9,6 +9,9 @@ contains_trigger() { echo "$trigger_names" | grep -F -q -w "$1"; }
 
 patch_koha() {
 	echo '\n==== IB PAN: PATCHING KOHA START ===='
+
+	source /opt/koha-ibpan/patches/misc.sh
+
 	NEED_RESTART=""
 	for i in /opt/koha-ibpan/patches/*.patch; do
 		OUTPUT=$(patch -p0 -d/ -N -r- < $i || true)
@@ -22,6 +25,7 @@ patch_koha() {
 		echo 'Restarting koha-common...'
 		systemctl restart koha-common
 	fi
+
 	echo '==== IB PAN: PATCHING KOHA END ====\n'
 }
 
