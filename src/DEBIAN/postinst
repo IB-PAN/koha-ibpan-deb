@@ -13,6 +13,7 @@ patch_koha() {
 	source /opt/koha-ibpan/patches/misc.sh
 
 	NEED_RESTART=""
+	echo "Applying patch files..."
 	for i in /opt/koha-ibpan/patches/*.patch; do
 		OUTPUT=$(patch -p0 -d/ -N -r- < $i || true)
 		echo $OUTPUT
@@ -34,15 +35,26 @@ update_elasticsearch_plugins() {
 	PLUGIN_BIN=/usr/share/elasticsearch/bin/elasticsearch-plugin
 	NEED_RESTART=""
 
-	for plugin in $(${PLUGIN_BIN} list); do
-		"${PLUGIN_BIN}" remove "${plugin}"
-		"${PLUGIN_BIN}" install "${plugin}"
-		NEED_RESTART="1"
-	done
+	if [ ! -e "${PLUGIN_BIN}" ] ; then
+		echo -e "\e[0;31mERROR: elasticsearch-plugin not found\e[0m" 
+	else
+		for plugin in $(${PLUGIN_BIN} list); do
+			echo "Updating plugin \"${plugin}\"..."
+			"${PLUGIN_BIN}" remove "${plugin}"
+			"${PLUGIN_BIN}" install "${plugin}"
+			NEED_RESTART="1"
+		done
 
-	if [ -n "${NEED_RESTART}" ]; then
-		echo 'Restarting elasticsearch...'
-		systemctl restart elasticsearch && echo 'Restarted elasticsearch'
+		if ! grep -qF "analysis-icu" <<< "$(${PLUGIN_BIN} list)"; then
+			echo "Installing plugin \"analysis-icu\" for Koha..."
+			"${PLUGIN_BIN}" install "analysis-icu"
+			NEED_RESTART="1"
+		fi
+
+		if [ -n "${NEED_RESTART}" ]; then
+			echo 'Restarting elasticsearch...'
+			systemctl restart elasticsearch && echo 'Restarted elasticsearch'
+		fi
 	fi
 	echo '==== IB PAN: UPDATING ELASTICSEARCH PLUGINS END ====\n'
 }
