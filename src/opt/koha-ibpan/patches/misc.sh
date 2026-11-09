@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Don't include Zebra indexes in the backups
-sed -iE 's/^koha-run-backups --days ([0-9]+) --output ([A-Za-z0-9/]+)$/koha-run-backups --days \1 --exclude-indexes --exclude-logs --output \2/' /etc/cron.daily/koha-common
+sed -Ei 's/^koha-run-backups --days ([0-9]+) --output ([A-Za-z0-9/]+)$/koha-run-backups --days \1 --exclude-indexes --exclude-logs --output \2/' /etc/cron.daily/koha-common
 
 # Update pre-compressed asset files for the web server
 echo "Updating pre-compressed asset files for the web server..."

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -8,7 +8,7 @@ trigger_names="$2"
 contains_trigger() { echo "$trigger_names" | grep -F -q -w "$1"; }
 
 patch_koha() {
-	echo '\n==== IB PAN: PATCHING KOHA START ===='
+	echo -e '\n==== IB PAN: PATCHING KOHA START ===='
 
 	source /opt/koha-ibpan/patches/misc.sh
 
@@ -25,13 +25,15 @@ patch_koha() {
 	if [ -n "${NEED_RESTART}" ]; then
 		echo 'Restarting koha-common...'
 		systemctl restart koha-common && echo 'Restarted koha-common'
+	else
+		echo "No need to restart koha-common."
 	fi
 
-	echo '==== IB PAN: PATCHING KOHA END ====\n'
+	echo -e '==== IB PAN: PATCHING KOHA END ====\n'
 }
 
 update_elasticsearch_plugins() {
-	echo '\n==== IB PAN: UPDATING ELASTICSEARCH PLUGINS START ===='
+	echo -e '\n==== IB PAN: UPDATING ELASTICSEARCH PLUGINS START ===='
 	PLUGIN_BIN=/usr/share/elasticsearch/bin/elasticsearch-plugin
 	NEED_RESTART=""
 
@@ -52,11 +54,13 @@ update_elasticsearch_plugins() {
 		fi
 
 		if [ -n "${NEED_RESTART}" ]; then
-			echo 'Restarting elasticsearch...'
-			systemctl restart elasticsearch && echo 'Restarted elasticsearch'
+			echo "Restarting elasticsearch..."
+			systemctl restart elasticsearch && echo "Restarted elasticsearch"
+		else
+			echo "No need to restart elasticsearch."
 		fi
 	fi
-	echo '==== IB PAN: UPDATING ELASTICSEARCH PLUGINS END ====\n'
+	echo -e '==== IB PAN: UPDATING ELASTICSEARCH PLUGINS END ====\n'
 }
 
 case "$1" in
