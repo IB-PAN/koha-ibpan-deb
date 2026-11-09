@@ -1,0 +1,58 @@
+--- /usr/sbin/koha-dump	2026-11-09 10:18:11.819312622 +0100
++++ /usr/sbin/koha-dump	2026-11-09 10:22:33.751086463 +0100
+@@ -30,6 +30,11 @@
+ # Make sure the files we create are not accessible by anyone else.
+ umask 0077
+ 
++# Set current process's CPU and IO niceness, so that the script doesn't steal resources from more important tasks.
++# These values are also inherited by children processes.
++renice -n 10 -p $$ || ( [ "$quiet" = "no" ] && echo "Failed setting nice value. This is a harmless error." )
++ionice -c 3 -p $$ || ( [ "$quiet" = "no" ] && echo "Failed setting ionice idle class value. This is a harmless error." )
++
+ usage()
+ {
+     local scriptname=$(basename $0)
+@@ -75,7 +80,7 @@
+     mysqlpass="$( xmlstarlet sel -t -v 'yazgfs/config/pass' $kohaconfig )"
+     backupdir="$( xmlstarlet sel -t -v 'yazgfs/config/backupdir' $kohaconfig || true )"
+     [ -z "$backupdir" ] && backupdir="/var/spool/koha/$name"
+-    dbdump="$backupdir/$name-$date.sql.gz"
++    dbdump="$backupdir/$name-$date.sql.zst"
+     dbflag="--no-tablespaces --databases"
+     [ "$without_db_name" = "yes" ] && dbflag=""
+     if [ "$schema_only" = "yes" ]
+@@ -90,14 +95,14 @@
+         [ "$quiet" = "no" ] && echo "* DB to $dbdump"
+         mysqldump $dbflag --host="$mysqlhost" --single-transaction \
+             --user="$mysqluser" --password="$mysqlpass" "$mysqldb" |
+-            gzip > "$dbdump"
++            zstd > "$dbdump"
+         chown "root:$name-koha" "$dbdump"
+         chmod g+r "$dbdump"
+ 
+         instancefile="$name.conf"
+ 
+         # Dump configs, logs, etc.
+-        metadump="$backupdir/$name-$date.tar.gz"
++        metadump="$backupdir/$name-$date.tar.zst"
+         output="* configs, logs"
+ 
+         if [ "$exclude_indexes" = "yes" ]; then
+@@ -129,7 +134,7 @@
+         set +e
+ 
+         if [ "$exclude_logs" = "yes" ]; then
+-            tar -czf "$metadump" -C / $excludes \
++            tar -caf "$metadump" -C / $excludes \
+                 "etc/koha/sites/$name" \
+                 "etc/apache2/sites-available/$instancefile" \
+                 "etc/apache2/sites-enabled/$instancefile" \
+@@ -137,7 +142,7 @@
+                 $uploaded_files_dir \
+                 $uploaded_temp_files_dir
+         else
+-            tar -czf "$metadump" -C / $excludes \
++            tar -caf "$metadump" -C / $excludes \
+                 "etc/koha/sites/$name" \
+                 "etc/apache2/sites-available/$instancefile" \
+                 "etc/apache2/sites-enabled/$instancefile" \
